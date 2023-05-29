@@ -1,6 +1,5 @@
 package com.example.composegithubuser.ui.screen.detail
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.pager.HorizontalPager
@@ -19,9 +18,6 @@ import kotlinx.coroutines.launch
 fun TabLayoutScreen(
     username: String
 ) {
-
-    Log.w("LOGW_TEST", "IAM CALLEDX")
-
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -41,7 +37,6 @@ fun TabLayoutScreen(
             tabItems.forEachIndexed { index, item ->
                 Tab(
                     selected = index == pagerState.currentPage,
-                    enabled = true,
                     text = { Text(text = item.title) },
                     onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } }
                 )

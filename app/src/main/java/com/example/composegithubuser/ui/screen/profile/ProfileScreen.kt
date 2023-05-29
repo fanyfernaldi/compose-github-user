@@ -33,6 +33,7 @@ import com.example.composegithubuser.core.domain.model.GithubUser
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    githubUser: GithubUser,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -67,19 +68,19 @@ fun ProfileScreen(
             modifier = modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = "https://avatars.githubusercontent.com/u/36123691?v=4",
+                model = githubUser.avatarUrl,
                 contentDescription = null,
                 modifier = modifier
                     .size(160.dp)
                     .clip(CircleShape)
             )
             Text(
-                text = "Fany Fernaldi",
+                text = githubUser.name,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = modifier.padding(top = 16.dp)
             )
-            Text(text = "fanyfernaldi@gmail.com", style = TextStyle(fontStyle = FontStyle.Italic))
+            Text(text = githubUser.email, style = TextStyle(fontStyle = FontStyle.Italic))
         }
     }
 }

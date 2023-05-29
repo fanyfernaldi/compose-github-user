@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,14 +30,16 @@ import com.example.composegithubuser.core.R
 import com.example.composegithubuser.core.data.Resource
 import com.example.composegithubuser.core.domain.model.GithubUser
 import com.example.composegithubuser.ui.components.UserItem
+import com.example.composegithubuser.ui.misc.toJsonApi
 import com.example.composegithubuser.ui.screen.showLoadingScreen
+import com.google.gson.Gson
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToDetail: (String) -> Unit,
-    navigateToProfile: () -> Unit
+    navigateToProfile: (String) -> Unit,
 ) {
     viewModel.uiState.collectAsState(initial = Resource.Loading()).value.let { resource ->
         when (resource) {
@@ -56,7 +57,7 @@ fun HomeScreen(
                         listGithubUser = it,
                         modifier = modifier,
                         navigateToDetail = navigateToDetail,
-                        navigateToProfile = navigateToProfile
+                        navigateToProfile = navigateToProfile,
                     )
                 }
             }
@@ -75,7 +76,7 @@ fun HomeContent(
     listGithubUser: List<GithubUser>,
     modifier: Modifier = Modifier,
     navigateToDetail: (String) -> Unit,
-    navigateToProfile: () -> Unit,
+    navigateToProfile: (String) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -105,7 +106,23 @@ fun HomeContent(
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-                IconButton(onClick = navigateToProfile) {
+                IconButton(
+                    onClick = {
+                        val githubUser = GithubUser(
+                            login = "test",
+                            avatarUrl = "https://avatars.githubusercontent.com/u/36123691?v=4",
+                            email = "test",
+                            followers = 10,
+                            following = 20,
+                            name = "test",
+                            isFavorite = false,
+                        )
+                        val githubUserJsonString = githubUser.toJsonApi()
+                        if (githubUserJsonString != null) {
+                            navigateToProfile(githubUserJsonString)
+                        }
+                    }) {
+
                     Icon(
                         imageVector = Icons.Filled.Person,
                         contentDescription = "profile",
@@ -145,6 +162,6 @@ fun HomeContentPreview() {
             )
         ),
         navigateToDetail = {},
-        navigateToProfile = {}
+        navigateToProfile = {},
     )
 }

@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.composegithubuser.core.domain.model.GithubUser
+import com.example.composegithubuser.ui.misc.fromJsonApi
 import com.example.composegithubuser.ui.navigation.Screen
 import com.example.composegithubuser.ui.screen.detail.DetailScreen
 import com.example.composegithubuser.ui.screen.home.HomeScreen
@@ -41,9 +42,9 @@ fun GithubUserApp(
                     navigateToDetail = { username ->
                         navController.navigate(Screen.Detail.createRoute(username))
                     },
-                    navigateToProfile = {
-                        navController.navigate(Screen.Profile.route)
-                    }
+                    navigateToProfile = { githubUser ->
+                        navController.navigate(Screen.Profile.createRoute(githubUser))
+                    },
                 )
             }
             composable(route = Screen.Detail.route) {
@@ -55,12 +56,21 @@ fun GithubUserApp(
                     }
                 )
             }
-            composable(route = Screen.Profile.route) {
-                ProfileScreen(
-                    navigateBack = {
-                        navController.navigateUp()
-                    },
-                )
+            composable(
+                route = Screen.Profile.route,
+                arguments = listOf(navArgument("githubUser") {
+                    type = NavType.StringType
+                })
+            ) {
+                it.arguments?.getString("githubUser")?.let { jsonGithubUserString ->
+                    val githubUser = jsonGithubUserString.fromJsonApi(GithubUser::class.java)
+                    ProfileScreen(
+                        githubUser = githubUser,
+                        navigateBack = {
+                            navController.navigateUp()
+                        },
+                    )
+                }
             }
         }
     }
