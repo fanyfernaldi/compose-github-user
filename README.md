@@ -1,4 +1,4 @@
-# compose-github-user
+# compose-github-user [IMPORTANT]
 
 To run this project, you need to change the token in file Service.kt with your Github Perconal Access Token.
 
