@@ -26,19 +26,24 @@ class DetailViewModel @Inject constructor(private val githubUseCase: GithubUseCa
     )
     val tabDataStates: Map<TabType, StateFlow<Resource<List<GithubUser>>>> = _tabDataStates
 
+    private val fetchedTabs = mutableSetOf<TabType>()
 
-    fun fetchDataForTabs(username: String) {
-        val tabs = TabType.values()
-        tabs.forEach { tabType ->
-            viewModelScope.launch {
-                if (tabType == TabType.FOLLOWING) {
-                    githubUseCase.getFollowing(username).collect { resourceListGithubUSer ->
-                        _tabDataStates[tabType]?.value = resourceListGithubUSer
-                    }
-                } else {
-                    githubUseCase.getFollowers(username).collect { resourceListGithubUSer ->
-                        _tabDataStates[tabType]?.value = resourceListGithubUSer
-                    }
+    fun fetchTabData(username: String, tabType: TabType) {
+        if (tabType !in fetchedTabs) {
+            fetchedTabs.add(tabType)
+            fetchDataForTab(username, tabType)
+        }
+    }
+
+    private fun fetchDataForTab(username: String, tabType: TabType) {
+        viewModelScope.launch {
+            if (tabType == TabType.FOLLOWING) {
+                githubUseCase.getFollowing(username).collect { resourceListGithubUSer ->
+                    _tabDataStates[tabType]?.value = resourceListGithubUSer
+                }
+            } else {
+                githubUseCase.getFollowers(username).collect { resourceListGithubUSer ->
+                    _tabDataStates[tabType]?.value = resourceListGithubUSer
                 }
             }
         }

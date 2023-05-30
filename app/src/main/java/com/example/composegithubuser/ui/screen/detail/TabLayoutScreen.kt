@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.composegithubuser.ui.screen.detail.tabs.TabScreen
+import com.example.composegithubuser.ui.screen.detail.tabs.TabType
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -26,7 +27,7 @@ fun TabLayoutScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(true) {
-        viewModel.fetchDataForTabs(username)
+        viewModel.fetchTabData(username = username, tabType = TabType.FOLLOWING)
     }
 
     Column {
@@ -37,6 +38,7 @@ fun TabLayoutScreen(
                     text = { Text(text = tabType.name) },
                     onClick = {
                         coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                        viewModel.fetchTabData(username, tabType)
                     }
                 )
             }
