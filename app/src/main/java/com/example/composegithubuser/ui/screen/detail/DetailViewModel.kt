@@ -1,10 +1,12 @@
 package com.example.composegithubuser.ui.screen.detail
 
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composegithubuser.core.data.Resource
 import com.example.composegithubuser.core.domain.model.GithubUser
 import com.example.composegithubuser.core.domain.usecase.GithubUseCase
+import com.example.composegithubuser.ui.screen.detail.tabs.TabType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,13 +20,29 @@ class DetailViewModel @Inject constructor(private val githubUseCase: GithubUseCa
         MutableStateFlow(Resource.Loading())
     val githubUserState: StateFlow<Resource<GithubUser>> = _githubUserState
 
-    private val _listFollowingState: MutableStateFlow<Resource<List<GithubUser>>> =
-        MutableStateFlow(Resource.Loading())
-    val listFollowingState: StateFlow<Resource<List<GithubUser>>> = _listFollowingState
+    private val _tabDataStates = mutableStateMapOf(
+        TabType.FOLLOWING to MutableStateFlow<Resource<List<GithubUser>>>(Resource.Loading()),
+        TabType.FOLLOWERS to MutableStateFlow<Resource<List<GithubUser>>>(Resource.Loading())
+    )
+    val tabDataStates: Map<TabType, StateFlow<Resource<List<GithubUser>>>> = _tabDataStates
 
-    private val _listFollowerState: MutableStateFlow<Resource<List<GithubUser>>> =
-        MutableStateFlow(Resource.Loading())
-    val listFollowerState: StateFlow<Resource<List<GithubUser>>> = _listFollowerState
+
+    fun fetchDataForTabs(username: String) {
+        val tabs = TabType.values()
+        tabs.forEach { tabType ->
+            viewModelScope.launch {
+                if (tabType == TabType.FOLLOWING) {
+                    githubUseCase.getFollowing(username).collect { resourceListGithubUSer ->
+                        _tabDataStates[tabType]?.value = resourceListGithubUSer
+                    }
+                } else {
+                    githubUseCase.getFollowers(username).collect { resourceListGithubUSer ->
+                        _tabDataStates[tabType]?.value = resourceListGithubUSer
+                    }
+                }
+            }
+        }
+    }
 
     fun getDetailUser(username: String) {
         viewModelScope.launch {
@@ -34,19 +52,11 @@ class DetailViewModel @Inject constructor(private val githubUseCase: GithubUseCa
         }
     }
 
-    fun getFollowing(username: String) {
-        viewModelScope.launch {
-            githubUseCase.getFollowing(username).collect { resourceListGithubUSer ->
-                _listFollowingState.value = resourceListGithubUSer
-            }
-        }
-    }
-
-    fun getFollowers(username: String) {
-        viewModelScope.launch {
-            githubUseCase.getFollowers(username).collect { resourceListGithubUser ->
-                _listFollowerState.value = resourceListGithubUser
-            }
+    fun getTabTypeForPage(page: Int): TabType {
+        return when (page) {
+            0 -> TabType.FOLLOWING
+            1 -> TabType.FOLLOWERS
+            else -> throw IllegalArgumentException("Invalid page index")
         }
     }
 

@@ -109,12 +109,12 @@ fun HomeContent(
                 IconButton(
                     onClick = {
                         val githubUser = GithubUser(
-                            login = "test",
+                            login = "fanyfernaldi",
                             avatarUrl = "https://avatars.githubusercontent.com/u/36123691?v=4",
-                            email = "test",
+                            email = "fanyfernaldi@gmail.com",
                             followers = 10,
                             following = 20,
-                            name = "test",
+                            name = "Fany Fernaldi",
                             isFavorite = false,
                         )
                         val githubUserJsonString = githubUser.toJsonApi()

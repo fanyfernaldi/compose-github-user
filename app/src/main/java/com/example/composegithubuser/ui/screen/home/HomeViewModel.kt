@@ -1,6 +1,5 @@
 package com.example.composegithubuser.ui.screen.home
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composegithubuser.core.data.Resource
@@ -9,7 +8,6 @@ import com.example.composegithubuser.core.domain.usecase.GithubUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +27,7 @@ class HomeViewModel @Inject constructor(private val githubUseCase: GithubUseCase
         getAllGithubUser()
     }
 
-    fun getAllGithubUser(q: String = "Arif") {
+    fun getAllGithubUser(q: String = "Fany") {
         viewModelScope.launch {
             githubUseCase.getAllGithubUser(q).collect { resourceListGithubUser ->
                 _uiState.value = resourceListGithubUser
